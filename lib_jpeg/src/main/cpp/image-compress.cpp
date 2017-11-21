@@ -22,14 +22,14 @@ extern "C" {
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 //全局引用
-jobject callBack;
+jobject listener;
 JNIEnv *menv;
 
 //关闭资源调用此方法
 void freeResource() {
 
-    menv->DeleteGlobalRef(callBack);
-    callBack = NULL;
+    menv->DeleteGlobalRef(listener);
+    listener = NULL;
     menv = NULL;
 }
 
@@ -39,7 +39,6 @@ typedef typedef unsigned char BYTE;
 #define true 1
 #define false 0
 
-char *error;
 struct my_error_mgr {
 
     struct jpeg_error_mgr pub;
@@ -52,22 +51,25 @@ typedef struct my_error_mgr *my_error_ptr;
 METHODDEF(void) my_error_exit(j_common_ptr cinfo) {
     my_error_ptr myerr = (my_error_ptr) cinfo->err;
     (*cinfo->err->output_message)(cinfo);
-    error = (char *) myerr->pub.jpeg_message_table[myerr->pub.msg_code];
+//    error = (char *) myerr->pub.jpeg_message_table[myerr->pub.msg_code];
 //    LOGE("jpeg_message_table[%d]:%s", myerr->pub.msg_code,
 //         myerr->pub.jpeg_message_table[myerr->pub.msg_code]);
     // LOGE("addon_message_table:%s", myerr->pub.addon_message_table);
 //  LOGE("SIZEOF:%d",myerr->pub.msg_parm.i[0]);
 //  LOGE("sizeof:%d",myerr->pub.msg_parm.i[1]);
-    jclass nativeCallBackClass = menv->FindClass(
-            "lib/image/compress/OnImageCompressChangeListener");
-    jmethodID errorMthodId = menv->GetMethodID(nativeCallBackClass, "onCompressError",
-                                               "(ILjava/lang/String;)V");
-    char description[100];
-    sprintf(description, "jpeg_message_table[%d]:%s", myerr->pub.msg_code,
-            myerr->pub.jpeg_message_table[myerr->pub.msg_code]);
-    if (callBack != NULL) {
 
-        menv->CallVoidMethod(callBack, errorMthodId, INTERNAL_ERROR,
+
+    if (NULL != listener) {
+
+        jclass javaName = menv->FindClass("lib/image/compress/OnImageCompressChangeListener");
+        jmethodID outfilename = menv->GetMethodID(javaName, "onCompressError",
+                                                  "(ILjava/lang/String;)V");
+
+        char description[100];
+        sprintf(description, "jpeg_message_table[%d]:%s", myerr->pub.msg_code,
+                myerr->pub.jpeg_message_table[myerr->pub.msg_code]);
+
+        menv->CallVoidMethod(listener, outfilename, INTERNAL_ERROR,
                              menv->NewStringUTF(description));
     }
 
@@ -84,9 +86,6 @@ int generateJPEG(BYTE *data, int w, int h, int quality,
     // 打印日志
     __android_log_print(ANDROID_LOG_ERROR, "jni_log", "压缩图片[so,no2] ==> 生成JPEG");
 
-    //回调java代码
-    jclass nativeCallBackClass = menv->FindClass(
-            "lib/image/compress/OnImageCompressChangeListener");
     //jpeg的结构体，保存的比如宽、高、位深、图片格式等信息，相当于java的类
     struct jpeg_compress_struct jcs;
 
@@ -107,17 +106,19 @@ int generateJPEG(BYTE *data, int w, int h, int quality,
 
     //打开输出文件 wb:可写byte
     FILE *f = fopen(outfilename, "wb");
-    if (f == NULL) {
+    if (NULL == f) {
 //        LOGE("打开文件失败");
 
-        if (callBack != NULL) {
+        if (NULL != listener) {
 
-            jmethodID errorMthodId = menv->GetMethodID(nativeCallBackClass, "onCompressError",
-                                                       "(ILjava/lang/String;)V");
+            //回调java代码
+            jclass javaName = menv->FindClass("lib/image/compress/OnImageCompressChangeListener");
+            jmethodID methodName = menv->GetMethodID(javaName, "onCompressError",
+                                                     "(ILjava/lang/String;)V");
             char description[100];
             sprintf(description, "以二进制打开读写文件路径[%s]失败", outfilename);
 
-            menv->CallVoidMethod(callBack, errorMthodId, FILE_ERROR,
+            menv->CallVoidMethod(listener, methodName, FILE_ERROR,
                                  menv->NewStringUTF(description));
         }
 
@@ -170,24 +171,30 @@ int generateJPEG(BYTE *data, int w, int h, int quality,
         jpeg_write_scanlines(&jcs, row_pointer, 1);//row_pointer就是一行的首地址，1：写入的行数
 
         // todo 压缩进度
-        //int temp = jcs.next_scanline * 100 / jcs.image_height;
-//        jmethodID pID = menv->GetMethodID(nativeCallBackClass, "onCompressChange",
-//                                          "(Ljava/lang/String;)V");
-//        if (callBack != NULL) {
-//            menv->CallVoidMethod(callBack, pID, menv->NewStringUTF("hh"));
+        // 打印日志
+//        fseek(f, 0L, SEEK_END);
+//        int size = ftell(f);
+//        fclose(f);
+//        __android_log_print(ANDROID_LOG_ERROR, "jni_log", "压缩图片[so,no3] ==> 大小 = %s", size+"");
+//         if (NULL != listener) {
+//            //回调java代码
+//            jclass javaName = menv->FindClass("lib/image/compress/OnImageCompressChangeListener");
+//            jmethodID methodName = menv->GetMethodID(javaName, "onCompressChange",
+//                                                     "(ILjava/lang/String;)V");
+//            menv->CallVoidMethod(listener, methodName, jcs.data_precision);
 //        }
     }
     jpeg_finish_compress(&jcs);//结束
     jpeg_destroy_compress(&jcs);//销毁 回收内存
     fclose(f);//关闭文件
 
+    if (NULL != listener) {
 
-
-    jmethodID pID = menv->GetMethodID(nativeCallBackClass, "onCompressFinish",
-                                      "(Ljava/lang/String;)V");
-    if (callBack != NULL) {
-
-        menv->CallVoidMethod(callBack, pID, menv->NewStringUTF(outfilename));
+        //回调java代码
+        jclass javaName = menv->FindClass("lib/image/compress/OnImageCompressChangeListener");
+        jmethodID methodName = menv->GetMethodID(javaName, "onCompressFinish",
+                                                 "(Ljava/lang/String;)V");
+        menv->CallVoidMethod(listener, methodName, menv->NewStringUTF(outfilename));
     }
     //关闭资源
     freeResource();
@@ -204,7 +211,7 @@ Java_lib_image_compress_ImageCompress_nativeLibJpegCompress(JNIEnv *env,
                                                             jobject bitmap,
                                                             jint CompressionRatio,
                                                             jboolean isUseHoffman,
-                                                            jobject nativeCallBack) {
+                                                            jobject mListener) {
     //文件输出地址
     const char *outpath = env->GetStringUTFChars(outpath_, 0);
 
@@ -215,7 +222,7 @@ Java_lib_image_compress_ImageCompress_nativeLibJpegCompress(JNIEnv *env,
     BYTE *pixelscolor;
 
     //保存全局引用
-    callBack = env->NewGlobalRef(nativeCallBack);
+    listener = env->NewGlobalRef(mListener);
     menv = env;
 
     // 得到bitmap一些信息
@@ -225,17 +232,21 @@ Java_lib_image_compress_ImageCompress_nativeLibJpegCompress(JNIEnv *env,
     int w = info.width;
     int h = info.height;
 
-    jclass nativeCallBackClass = env->FindClass("lib/image/compress/OnImageCompressChangeListener");
-
     //校验图片合法性
     if (w <= 0 || h <= 0) {
 //        LOGE("发生错误:传入的图片宽度或者高度不小于等于0 【width:%d】【height:%d】", w, h);
-        jmethodID errorMthodId = env->GetMethodID(nativeCallBackClass, "onCompressError",
-                                                  "(ILjava/lang/String;)V");
-        char description[100];
-        sprintf(description, "图高度或者宽为0，【高：%d】 【 宽：%d】", h, w);
-        if (callBack != NULL) {
-            env->CallVoidMethod(nativeCallBack, errorMthodId, BITMAP_HEIGHT_WIDTH_ERROR,
+
+
+        if (NULL != listener) {
+
+            jclass javaName = env->FindClass("lib/image/compress/OnImageCompressChangeListener");
+            jmethodID methodName = env->GetMethodID(javaName, "onCompressError",
+                                                    "(ILjava/lang/String;)V");
+
+            char description[100];
+            sprintf(description, "图高度或者宽为0，【高：%d】 【 宽：%d】", h, w);
+
+            env->CallVoidMethod(listener, methodName, BITMAP_HEIGHT_WIDTH_ERROR,
                                 env->NewStringUTF(description));
         }
 
@@ -247,11 +258,14 @@ Java_lib_image_compress_ImageCompress_nativeLibJpegCompress(JNIEnv *env,
     //校验图片格式
     if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
 //        LOGE("发生错误:传入的图片不合法");
-        jmethodID errorMthodId = env->GetMethodID(nativeCallBackClass, "onCompressError",
-                                                  "(ILjava/lang/String;)V");
 
-        if (callBack != NULL) {
-            env->CallVoidMethod(nativeCallBack, errorMthodId, BITMAP_FOMAT_ERROR,
+        if (NULL != listener) {
+
+            jclass javaName = env->FindClass("lib/image/compress/OnImageCompressChangeListener");
+            jmethodID methodName = env->GetMethodID(javaName, "onCompressError",
+                                                    "(ILjava/lang/String;)V");
+
+            env->CallVoidMethod(listener, methodName, BITMAP_FOMAT_ERROR,
                                 env->NewStringUTF("图片格式错误"));
         }
 

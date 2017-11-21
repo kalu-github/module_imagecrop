@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCompressChange(String errorNum) {
+            public void onCompressChange(int errorNum) {
                 Log.e(TAG, "onCompressChange() ==> present = " + errorNum);
             }
 

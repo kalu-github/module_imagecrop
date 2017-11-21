@@ -82,17 +82,17 @@ public class ImageUtil {
 
             if (temp.exists()) {
                 temp.delete();
-                Log.e("kalu", "文件名存在, 删除已知图片文件");
+                Log.e("kalu", "文件名存在, 删除yizhi图片文件");
             }
 
             final boolean newFile = temp.createNewFile();
             Log.e("kalu", "创建历史图片文件 = " + newFile);
+
+            Log.e("kalu", "主线程 ==> 压缩图片");
+            nativecompress(isUseHoffman, bitmap, onImageCompressChangeListener, file, CompressionRatio);
         } catch (IOException e) {
             Log.e("kalu", e.getMessage(), e);
         }
-
-        Log.e("kalu", "主线程 ==> 压缩图片");
-        nativecompress(isUseHoffman, bitmap, onImageCompressChangeListener, file, CompressionRatio);
     }
 
     /**
@@ -117,19 +117,19 @@ public class ImageUtil {
 
             final boolean newFile = temp.createNewFile();
             Log.e("kalu", "创建历史图片文件 = " + newFile);
+
+            new Thread() {
+                @Override
+                public void run() {
+                    super.run();
+
+                    Log.e("kalu", "分线程 ==> 压缩图片");
+                    nativecompress(isUseHoffman, bitmap, onImageCompressChangeListener, file, CompressionRatio);
+                }
+            }.start();
         } catch (IOException e) {
             Log.e("kalu", e.getMessage(), e);
         }
-
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-
-                Log.e("kalu", "分线程 ==> 压缩图片");
-                nativecompress(isUseHoffman, bitmap, onImageCompressChangeListener, file, CompressionRatio);
-            }
-        }.start();
     }
 
     private static void nativecompress(boolean isUseHoffman, Bitmap bitmap, OnImageCompressChangeListener onImageCompressChangeListener, String outpath, int CompressionRatio) {
