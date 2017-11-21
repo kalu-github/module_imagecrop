@@ -72,7 +72,7 @@ public class ImageUtil {
      * @param bitmap                        需要压缩的bitmap图片
      * @param onImageCompressChangeListener 回调 如果是子线程调用那么回调在子线程
      */
-    public static void syncCompress(final boolean isUseHoffman, final int CompressionRatio, final String outpath, final Bitmap bitmap, final OnImageCompressChangeListener onImageCompressChangeListener) {
+    public static void syncCompressNative(final boolean isUseHoffman, final int CompressionRatio, final String outpath, final Bitmap bitmap, final OnImageCompressChangeListener onImageCompressChangeListener) {
 
         String file = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + outpath;
@@ -90,6 +90,7 @@ public class ImageUtil {
             Log.e("kalu", e.getMessage(), e);
         }
 
+        Log.e("kalu", "主线程 ==> 压缩图片");
         nativecompress(isUseHoffman, bitmap, onImageCompressChangeListener, file, CompressionRatio);
     }
 
@@ -101,13 +102,31 @@ public class ImageUtil {
      * @param outpath          用哈夫曼压缩后文件保存路径
      * @param bitmap           需要压缩的bitmap图片
      */
-    public static void asynCompress(final boolean isUseHoffman, final int CompressionRatio, final String outpath, final Bitmap bitmap, final OnImageCompressChangeListener onImageCompressChangeListener) {
+    public static void asynCompressNative(final boolean isUseHoffman, final int CompressionRatio, final String outpath, final Bitmap bitmap, final OnImageCompressChangeListener onImageCompressChangeListener) {
+
+        final String file = Environment.getExternalStorageDirectory().getAbsolutePath()
+                + File.separator + outpath;
+
+        final File temp = new File(file.trim().toLowerCase());
+        try {
+
+            if (temp.exists()) {
+                temp.delete();
+            }
+
+            final boolean newFile = temp.createNewFile();
+            Log.e("kalu", "创建历史图片文件 = " + newFile);
+        } catch (IOException e) {
+            Log.e("kalu", e.getMessage(), e);
+        }
 
         new Thread() {
             @Override
             public void run() {
                 super.run();
-                nativecompress(isUseHoffman, bitmap, onImageCompressChangeListener, "/mnt/sdcard/" + outpath, CompressionRatio);
+
+                Log.e("kalu", "分线程 ==> 压缩图片");
+                nativecompress(isUseHoffman, bitmap, onImageCompressChangeListener, file, CompressionRatio);
             }
         }.start();
     }
@@ -137,7 +156,7 @@ public class ImageUtil {
      * @param destHeight 高
      * @return
      */
-    public static Bitmap compressPxSampleSize(byte[] data, int destWidth, int destHeight) {
+    public static Bitmap compressImageJava(byte[] data, int destWidth, int destHeight) {
         //第一次采样
         BitmapFactory.Options options = new BitmapFactory.Options();
         //该属性设置为true只会加载图片的边框进来，并不会加载图片具体的像素点
@@ -156,7 +175,7 @@ public class ImageUtil {
      * @param destHeight
      * @return
      */
-    public static Bitmap compressPxSampleSize(InputStream is, int destWidth, int destHeight) {
+    public static Bitmap compressImageJava(InputStream is, int destWidth, int destHeight) {
         //第一次采样
         BitmapFactory.Options options = new BitmapFactory.Options();
         //该属性设置为true只会加载图片的边框进来，并不会加载图片具体的像素点
@@ -176,7 +195,7 @@ public class ImageUtil {
      * @param destHeight 目标高度
      * @return
      */
-    public static Bitmap compressPxSampleSize(Resources resources, int bitmapId, int destWidth, int destHeight) {
+    public static Bitmap compressImageJava(Resources resources, int bitmapId, int destWidth, int destHeight) {
         //第一次采样
         BitmapFactory.Options options = new BitmapFactory.Options();
         //该属性设置为true只会加载图片的边框进来，并不会加载图片具体的像素点
@@ -194,7 +213,7 @@ public class ImageUtil {
      *                   通过缩放图片像素来减少图片占用内存大小
      * @return
      */
-    public static Bitmap compressPxSampleSize(String filePath, int destWidth, int destHeight) {
+    public static Bitmap compressImageJava(String filePath, int destWidth, int destHeight) {
         //第一次采样
         BitmapFactory.Options options = new BitmapFactory.Options();
         //该属性设置为true只会加载图片的边框进来，并不会加载图片具体的像素点

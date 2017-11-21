@@ -29,25 +29,29 @@ public class MainActivity extends AppCompatActivity {
     public void onClick(View view) {
         iv = (ImageView) findViewById(R.id.iv);
 
-        Bitmap bitmap = ImageUtil.compressPxSampleSize(getResources(), R.mipmap.test, 2000, 2000);
+        Bitmap bitmap = ImageUtil.compressImageJava(getResources(), R.mipmap.test, 2000, 2000);
         iv.setImageBitmap(bitmap);
 
-        ImageUtil.syncCompress(true, 50, "image.jpg", bitmap, new OnImageCompressChangeListener() {
+        ImageUtil.syncCompressNative(true, 50, "image.jpg", bitmap, new OnImageCompressChangeListener() {
             @Override
             public void onCompressStart() {
-                Log.e(TAG, "startCompress() called");
+                Log.e(TAG, "onCompressStart()");
             }
 
             @Override
             public void onCompressError(int errorNum, String description) {
-                Log.e(TAG, "onCompressError() called with: errorNum = [" + errorNum + "], description = [" + description + "]");
+                Log.e(TAG, "onCompressError() ==> errorNum = [" + errorNum + "], description = [" + description + "]");
+            }
+
+            @Override
+            public void onCompressChange(String errorNum) {
+                Log.e(TAG, "onCompressChange() ==> present = " + errorNum);
             }
 
             @Override
             public void onCompressFinish(String filePath) {
-                Log.e(TAG, "onCompressFinish() called with: filePath = [" + filePath + "]");
+                Log.e(TAG, "onCompressFinish() ==> filePath = [" + filePath + "]");
             }
         });
-
     }
 }

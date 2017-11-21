@@ -58,7 +58,8 @@ METHODDEF(void) my_error_exit(j_common_ptr cinfo) {
     // LOGE("addon_message_table:%s", myerr->pub.addon_message_table);
 //  LOGE("SIZEOF:%d",myerr->pub.msg_parm.i[0]);
 //  LOGE("sizeof:%d",myerr->pub.msg_parm.i[1]);
-    jclass nativeCallBackClass = menv->FindClass("lib/image/compress/OnImageCompressChangeListener");
+    jclass nativeCallBackClass = menv->FindClass(
+            "lib/image/compress/OnImageCompressChangeListener");
     jmethodID errorMthodId = menv->GetMethodID(nativeCallBackClass, "onCompressError",
                                                "(ILjava/lang/String;)V");
     char description[100];
@@ -79,8 +80,13 @@ METHODDEF(void) my_error_exit(j_common_ptr cinfo) {
 // 生成JPEG
 int generateJPEG(BYTE *data, int w, int h, int quality,
                  const char *outfilename, jboolean optimize) {
+
+    // 打印日志
+    __android_log_print(ANDROID_LOG_ERROR, "jni_log", "压缩图片[so,no2] ==> 生成JPEG");
+
     //回调java代码
-    jclass nativeCallBackClass = menv->FindClass("lib/image/compress/OnImageCompressChangeListener");
+    jclass nativeCallBackClass = menv->FindClass(
+            "lib/image/compress/OnImageCompressChangeListener");
     //jpeg的结构体，保存的比如宽、高、位深、图片格式等信息，相当于java的类
     struct jpeg_compress_struct jcs;
 
@@ -162,6 +168,14 @@ int generateJPEG(BYTE *data, int w, int h, int quality,
 
         //此方法会将jcs.next_scanline加1
         jpeg_write_scanlines(&jcs, row_pointer, 1);//row_pointer就是一行的首地址，1：写入的行数
+
+        // todo 压缩进度
+        //int temp = jcs.next_scanline * 100 / jcs.image_height;
+//        jmethodID pID = menv->GetMethodID(nativeCallBackClass, "onCompressChange",
+//                                          "(Ljava/lang/String;)V");
+//        if (callBack != NULL) {
+//            menv->CallVoidMethod(callBack, pID, menv->NewStringUTF("hh"));
+//        }
     }
     jpeg_finish_compress(&jcs);//结束
     jpeg_destroy_compress(&jcs);//销毁 回收内存
@@ -185,17 +199,17 @@ extern "C"
 //防止c++的命名规范导致jni找不到方法
 JNIEXPORT void JNICALL
 Java_lib_image_compress_ImageCompress_nativeLibJpegCompress(JNIEnv *env,
-                                                             jobject instance,
-                                                             jstring outpath_,
-                                                             jobject bitmap,
-                                                             jint CompressionRatio,
-                                                             jboolean isUseHoffman,
-                                                             jobject nativeCallBack) {
+                                                            jobject instance,
+                                                            jstring outpath_,
+                                                            jobject bitmap,
+                                                            jint CompressionRatio,
+                                                            jboolean isUseHoffman,
+                                                            jobject nativeCallBack) {
     //文件输出地址
     const char *outpath = env->GetStringUTFChars(outpath_, 0);
 
     // 打印日志
-    __android_log_print(ANDROID_LOG_ERROR, "jni_log", "startCompress[so] ==>outpath = %s", outpath);
+    __android_log_print(ANDROID_LOG_ERROR, "jni_log", "压缩图片[so,no1] ==> 保存路径 = %s", outpath);
 
     //用于保存bitmap的二进制数据
     BYTE *pixelscolor;
@@ -286,7 +300,6 @@ Java_lib_image_compress_ImageCompress_nativeLibJpegCompress(JNIEnv *env,
     //拷贝输出文件地址
     char *outPathBackup = (char *) malloc(sizeof(char) * (strlen(outpath) + 1));
     strcpy(outPathBackup, outpath);
-//    LOGE("开始压缩");
     //压缩
     generateJPEG(tmpdata, w, h, CompressionRatio, outPathBackup, isUseHoffman);
 

@@ -11,4 +11,6 @@ public interface OnImageCompressChangeListener {
     void onCompressFinish(String filePath);
 
     void onCompressError(int errorNum, String description);
+
+    void onCompressChange(String errorNum);
 }
