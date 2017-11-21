@@ -1,4 +1,16 @@
+
 ```
+适用场景：
+
+1.获取压缩后, 清晰度变化不大的图片文件
+2.手机相机拍照高清图片, c压缩图片保持清晰度变换不大, 之后上传至服务器
+```
+
+```
+// 获取bitmap
+Bitmap bitmap = ImageUtil.compressImageJava(getResources(), R.mipmap.test, 2000, 2000);
+
+// c压缩保存至本地
 ImageUtil.syncCompressNative(true, 50, "image.jpg", bitmap, new OnImageCompressChangeListener() {
             @Override
             public void onCompressStart() {
