@@ -11,6 +11,12 @@
 ```
 
 ```
+TODO:
+
+压缩过程显示压缩进度
+```
+
+```
 // 获取bitmap
 Bitmap bitmap = ImageUtil.compressImageJava(getResources(), R.mipmap.test, 2000, 2000);
 
