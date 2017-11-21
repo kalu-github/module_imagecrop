@@ -82,6 +82,7 @@ public class ImageUtil {
 
             if (temp.exists()) {
                 temp.delete();
+                Log.e("kalu", "文件名存在, 删除已知图片文件");
             }
 
             final boolean newFile = temp.createNewFile();

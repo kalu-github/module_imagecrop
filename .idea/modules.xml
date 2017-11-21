@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ImageCompress.iml" filepath="$PROJECT_DIR$/ImageCompress.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Image_Compress_v1.2.iml" filepath="$PROJECT_DIR$/Image_Compress_v1.2.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib_jpeg/lib_jpeg.iml" filepath="$PROJECT_DIR$/lib_jpeg/lib_jpeg.iml" />
     </modules>

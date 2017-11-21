@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bitmap = ImageUtil.compressImageJava(getResources(), R.mipmap.test, 2000, 2000);
         iv.setImageBitmap(bitmap);
 
-        ImageUtil.syncCompressNative(true, 50, "image.jpg", bitmap, new OnImageCompressChangeListener() {
+        ImageUtil.syncCompressNative(true, 5, "image.jpg", bitmap, new OnImageCompressChangeListener() {
             @Override
             public void onCompressStart() {
                 Log.e(TAG, "onCompressStart()");
