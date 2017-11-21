@@ -1,4 +1,7 @@
 
+![image](https://github.com/153437803/ImageCompress/blob/master/Screenshot_2017-11-21-23-27-06-089_com.image.compress.png ) 
+![image](https://github.com/153437803/ImageCompress/blob/master/Screenshot_2017-11-21-23-27-06-089_com.image.compress1.png ) 
+
 ```
 适用场景：
 
