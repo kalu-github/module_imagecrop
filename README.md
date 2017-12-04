@@ -1,4 +1,4 @@
-[戳我下载, 体验DEMO(确认同意sd读写权限,压缩后图片地址:sd卡根目录/image.jpg)](https://pan.baidu.com/s/1geID3vt)
+[戳我下载, 体验DEMO ==> (确认同意sd读写权限,压缩后图片地址:sd卡根目录/image.jpg)](https://pan.baidu.com/s/1geID3vt)
 
 ![image](https://github.com/153437803/ImageCompress/blob/master/Screenshot_2017-11-21-23-27-06-089_com.image.compress.png ) 
 ![image](https://github.com/153437803/ImageCompress/blob/master/Screenshot_2017-11-21-23-27-06-089_com.image.compress1.png ) 
