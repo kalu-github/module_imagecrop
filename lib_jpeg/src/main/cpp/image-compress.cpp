@@ -61,7 +61,7 @@ METHODDEF(void) my_error_exit(j_common_ptr cinfo) {
 
     if (NULL != listener) {
 
-        jclass javaName = menv->FindClass("lib/image/compress/OnImageCompressChangeListener");
+        jclass javaName = menv->FindClass("lib/image/compress/OnCompressChangeListener");
         jmethodID outfilename = menv->GetMethodID(javaName, "onCompressError",
                                                   "(ILjava/lang/String;)V");
 
@@ -112,7 +112,7 @@ int generateJPEG(BYTE *data, int w, int h, int quality,
         if (NULL != listener) {
 
             //回调java代码
-            jclass javaName = menv->FindClass("lib/image/compress/OnImageCompressChangeListener");
+            jclass javaName = menv->FindClass("lib/image/compress/OnCompressChangeListener");
             jmethodID methodName = menv->GetMethodID(javaName, "onCompressError",
                                                      "(ILjava/lang/String;)V");
             char description[100];
@@ -178,7 +178,7 @@ int generateJPEG(BYTE *data, int w, int h, int quality,
 //        __android_log_print(ANDROID_LOG_ERROR, "jni_log", "压缩图片[so,no3] ==> 大小 = %s", size+"");
 //         if (NULL != listener) {
 //            //回调java代码
-//            jclass javaName = menv->FindClass("lib/image/compress/OnImageCompressChangeListener");
+//            jclass javaName = menv->FindClass("lib/image/compress/OnCompressChangeListener");
 //            jmethodID methodName = menv->GetMethodID(javaName, "onCompressChange",
 //                                                     "(ILjava/lang/String;)V");
 //            menv->CallVoidMethod(listener, methodName, jcs.data_precision);
@@ -191,7 +191,7 @@ int generateJPEG(BYTE *data, int w, int h, int quality,
     if (NULL != listener) {
 
         //回调java代码
-        jclass javaName = menv->FindClass("lib/image/compress/OnImageCompressChangeListener");
+        jclass javaName = menv->FindClass("lib/image/compress/OnCompressChangeListener");
         jmethodID methodName = menv->GetMethodID(javaName, "onCompressFinish",
                                                  "(Ljava/lang/String;)V");
         menv->CallVoidMethod(listener, methodName, menv->NewStringUTF(outfilename));
@@ -205,7 +205,7 @@ int generateJPEG(BYTE *data, int w, int h, int quality,
 extern "C"
 //防止c++的命名规范导致jni找不到方法
 JNIEXPORT void JNICALL
-Java_lib_image_compress_ImageCompress_nativeLibJpegCompress(JNIEnv *env,
+Java_lib_image_compress_CompressNative_nativeLibJpegCompress(JNIEnv *env,
                                                             jobject instance,
                                                             jstring outpath_,
                                                             jobject bitmap,
@@ -239,7 +239,7 @@ Java_lib_image_compress_ImageCompress_nativeLibJpegCompress(JNIEnv *env,
 
         if (NULL != listener) {
 
-            jclass javaName = env->FindClass("lib/image/compress/OnImageCompressChangeListener");
+            jclass javaName = env->FindClass("lib/image/compress/OnCompressChangeListener");
             jmethodID methodName = env->GetMethodID(javaName, "onCompressError",
                                                     "(ILjava/lang/String;)V");
 
@@ -261,7 +261,7 @@ Java_lib_image_compress_ImageCompress_nativeLibJpegCompress(JNIEnv *env,
 
         if (NULL != listener) {
 
-            jclass javaName = env->FindClass("lib/image/compress/OnImageCompressChangeListener");
+            jclass javaName = env->FindClass("lib/image/compress/OnCompressChangeListener");
             jmethodID methodName = env->GetMethodID(javaName, "onCompressError",
                                                     "(ILjava/lang/String;)V");
 
@@ -316,7 +316,10 @@ Java_lib_image_compress_ImageCompress_nativeLibJpegCompress(JNIEnv *env,
     strcpy(outPathBackup, outpath);
     //压缩
     generateJPEG(tmpdata, w, h, CompressionRatio, outPathBackup, isUseHoffman);
-
+    // fix bug 2018-04-22 11:58:04
+    if (tmpdata) {
+        free(tmpdata);
+    }
     //释放资源
     env->ReleaseStringUTFChars(outpath_, outpath);
 }

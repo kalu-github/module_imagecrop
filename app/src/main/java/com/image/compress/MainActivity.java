@@ -2,17 +2,14 @@ package com.image.compress;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import lib.image.compress.ImageUtil;
-import lib.image.compress.OnImageCompressChangeListener;
+import lib.image.compress.CompressManager;
+import lib.image.compress.OnCompressChangeListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bitmap = ImageUtil.compressImageJava(getResources(), R.mipmap.test, 2000, 2000);
         iv.setImageBitmap(bitmap);
 
-        ImageUtil.syncCompressNative(true, 5, "image.jpg", bitmap, new OnImageCompressChangeListener() {
+        final String folderPath = Environment.getExternalStorageDirectory().getPath() + "//";
+        CompressManager.syncCompress(true, 5, folderPath, "image.jpg", bitmap, new OnCompressChangeListener() {
             @Override
             public void onCompressStart() {
                 Log.e(TAG, "onCompressStart()");
@@ -41,11 +39,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCompressError(int errorNum, String description) {
                 Log.e(TAG, "onCompressError() ==> errorNum = [" + errorNum + "], description = [" + description + "]");
-            }
-
-            @Override
-            public void onCompressChange(int errorNum) {
-                Log.e(TAG, "onCompressChange() ==> present = " + errorNum);
             }
 
             @Override
