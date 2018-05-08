@@ -320,6 +320,9 @@ Java_lib_image_compress_CompressNative_nativeLibJpegCompress(JNIEnv *env,
     if (tmpdata) {
         free(tmpdata);
     }
+    if (outPathBackup) {
+        free(outPathBackup);
+    }
     //释放资源
     env->ReleaseStringUTFChars(outpath_, outpath);
 }
