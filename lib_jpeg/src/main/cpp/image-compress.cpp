@@ -50,7 +50,7 @@ typedef struct my_error_mgr *my_error_ptr;
 //错误的方法回调
 METHODDEF(void) my_error_exit(j_common_ptr cinfo) {
     my_error_ptr myerr = (my_error_ptr) cinfo->err;
-    (*cinfo->err->output_message)(cinfo);
+  //  (*cinfo->err->output_message)(cinfo);
 //    error = (char *) myerr->pub.jpeg_message_table[myerr->pub.msg_code];
 //    LOGE("jpeg_message_table[%d]:%s", myerr->pub.msg_code,
 //         myerr->pub.jpeg_message_table[myerr->pub.msg_code]);
