@@ -21,8 +21,7 @@ TODO:
 // 获取bitmap
 Bitmap bitmap = ImageUtil.compressImageJava(getResources(), R.mipmap.test, 2000, 2000);
 
-// c压缩保存至本地
-ImageUtil.syncCompressNative(true, 50, "image.jpg", bitmap, new OnImageCompressChangeListener() {
+CompressManager.syncCompress(true, 5, folderPath, imageName, bitmap, new OnCompressChangeListener() {
             @Override
             public void onCompressStart() {
                 Log.e(TAG, "onCompressStart()");
@@ -31,11 +30,6 @@ ImageUtil.syncCompressNative(true, 50, "image.jpg", bitmap, new OnImageCompressC
             @Override
             public void onCompressError(int errorNum, String description) {
                 Log.e(TAG, "onCompressError() ==> errorNum = [" + errorNum + "], description = [" + description + "]");
-            }
-
-            @Override
-            public void onCompressChange(String errorNum) {
-                Log.e(TAG, "onCompressChange() ==> present = " + errorNum);
             }
 
             @Override
