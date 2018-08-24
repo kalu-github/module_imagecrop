@@ -3,7 +3,7 @@
 compile 'lib.image.compress:imagecompress:<latest-version>'
 ```
 
-![image](https://github.com/153437803/ImageCompress/edit/master/Screenrecorder-2018-08-24-15-34-58-511.gif )
+![image](https://github.com/153437803/ImageCompress/blob/master/Screenrecorder-2018-08-24-15-34-58-511.gif )
 
 #### 适用环境
 ```
