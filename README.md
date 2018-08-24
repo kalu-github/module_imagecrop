@@ -3,6 +3,8 @@
 compile 'lib.image.compress:imagecompress:<latest-version>'
 ```
 
+![image](https://github.com/153437803/ImageCompress/edit/master/Screenrecorder-2018-08-24-15-34-58-511.gif )
+
 #### 适用环境
 ```
 运行项目, 需要自行配置cmake-android-studio编译环境
