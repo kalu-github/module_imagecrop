@@ -3,9 +3,7 @@
 #include <android/bitmap.h>
 #include <android/log.h>
 #include <stdio.h>
-#include <android/bitmap.h>
 #include <setjmp.h>
-#include <math.h>
 #include <stdint.h>
 #include <time.h>
 #include <malloc.h>
@@ -13,23 +11,17 @@
 //告诉编译器以下文件是用c文件
 extern "C" {
 #include "jpeglib.h"
-#include "jerror.h"        /* Common decls for cjpeg/djpeg applications */
 #include "jmorecfg.h"    /* for version message */
-#include "jconfig.h"
 }
-#define LOG_TAG "libjpeg"
-#define LOGW(...)  __android_log_write(ANDROID_LOG_WARN,LOG_TAG,__VA_ARGS__)
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 //全局引用
-jobject listener;
+jobject callBack;
 JNIEnv *menv;
 
 //关闭资源调用此方法
 void freeResource() {
 
-    menv->DeleteGlobalRef(listener);
-    listener = NULL;
+    menv->DeleteGlobalRef(callBack);
+    callBack = NULL;
     menv = NULL;
 }
 
@@ -47,32 +39,22 @@ struct my_error_mgr {
 
 typedef struct my_error_mgr *my_error_ptr;
 
-//错误的方法回调
+// 错误的方法回调
 METHODDEF(void) my_error_exit(j_common_ptr cinfo) {
+
     my_error_ptr myerr = (my_error_ptr) cinfo->err;
-  //  (*cinfo->err->output_message)(cinfo);
-//    error = (char *) myerr->pub.jpeg_message_table[myerr->pub.msg_code];
-//    LOGE("jpeg_message_table[%d]:%s", myerr->pub.msg_code,
-//         myerr->pub.jpeg_message_table[myerr->pub.msg_code]);
-    // LOGE("addon_message_table:%s", myerr->pub.addon_message_table);
-//  LOGE("SIZEOF:%d",myerr->pub.msg_parm.i[0]);
-//  LOGE("sizeof:%d",myerr->pub.msg_parm.i[1]);
 
+    jclass nativeCallBackClass = menv->FindClass("lib/image/compress/OnCompressChangeListener");
+    jmethodID errorMthodId = menv->GetMethodID(nativeCallBackClass, "onCompressError",
+                                               "(ILjava/lang/String;)V");
+    char description[100];
+    sprintf(description, "jpeg_message_table[%d]:%s", myerr->pub.msg_code,
+            myerr->pub.jpeg_message_table[myerr->pub.msg_code]);
 
-    if (NULL != listener) {
-
-        jclass javaName = menv->FindClass("lib/image/compress/OnCompressChangeListener");
-        jmethodID outfilename = menv->GetMethodID(javaName, "onCompressError",
-                                                  "(ILjava/lang/String;)V");
-
-        char description[100];
-        sprintf(description, "jpeg_message_table[%d]:%s", myerr->pub.msg_code,
-                myerr->pub.jpeg_message_table[myerr->pub.msg_code]);
-
-        menv->CallVoidMethod(listener, outfilename, INTERNAL_ERROR,
+    if (callBack != NULL) {
+        menv->CallVoidMethod(callBack, errorMthodId, INTERNAL_ERROR,
                              menv->NewStringUTF(description));
     }
-
 
     //跳转setjmp 并且返回值为1结束
     longjmp(myerr->setjmp_buffer, 1);
@@ -83,9 +65,12 @@ METHODDEF(void) my_error_exit(j_common_ptr cinfo) {
 int generateJPEG(BYTE *data, int w, int h, int quality,
                  const char *outfilename, jboolean optimize) {
 
-    // 打印日志
-    __android_log_print(ANDROID_LOG_ERROR, "jni_log", "压缩图片[so,no2] ==> 生成JPEG");
+    //打印日志
+    __android_log_print(ANDROID_LOG_ERROR, "jni_time", "generateJPEG ==> ");
 
+    //回调java代码
+    jclass nativeCallBackClass = menv->FindClass(
+            "lib/image/compress/OnCompressChangeListener");
     //jpeg的结构体，保存的比如宽、高、位深、图片格式等信息，相当于java的类
     struct jpeg_compress_struct jcs;
 
@@ -106,19 +91,17 @@ int generateJPEG(BYTE *data, int w, int h, int quality,
 
     //打开输出文件 wb:可写byte
     FILE *f = fopen(outfilename, "wb");
-    if (NULL == f) {
+    if (f == NULL) {
 //        LOGE("打开文件失败");
 
-        if (NULL != listener) {
+        if (callBack != NULL) {
 
-            //回调java代码
-            jclass javaName = menv->FindClass("lib/image/compress/OnCompressChangeListener");
-            jmethodID methodName = menv->GetMethodID(javaName, "onCompressError",
-                                                     "(ILjava/lang/String;)V");
+            jmethodID errorMthodId = menv->GetMethodID(nativeCallBackClass, "onCompressError",
+                                                       "(ILjava/lang/String;)V");
             char description[100];
             sprintf(description, "以二进制打开读写文件路径[%s]失败", outfilename);
 
-            menv->CallVoidMethod(listener, methodName, FILE_ERROR,
+            menv->CallVoidMethod(callBack, errorMthodId, FILE_ERROR,
                                  menv->NewStringUTF(description));
         }
 
@@ -156,45 +139,62 @@ int generateJPEG(BYTE *data, int w, int h, int quality,
     //设置质量 quality是个0～100之间的整数，表示压缩比率
     jpeg_set_quality(&jcs, quality, true);
     //开始压缩，(是否写入全部像素)
-    jpeg_start_compress(&jcs, TRUE);
+    jpeg_start_compress(&jcs, true);
 
     JSAMPROW row_pointer[1];
-    int row_stride;
+
     //一行的rgb数量
-    row_stride = jcs.image_width * nComponent;
+    int row_stride = jcs.image_width * nComponent;
+
+    //均等
+    int split = (jcs.image_height / 20);
+
     //一行一行遍历
     while (jcs.next_scanline < jcs.image_height) {
+
+        if (jcs.next_scanline != 0 && jcs.next_scanline % split == 0) {
+            // 百分比
+            int percent = (jcs.next_scanline * 100 / jcs.image_height);
+            if (percent > 0) {
+                //打印日志
+                __android_log_print(ANDROID_LOG_ERROR, "jni_log",
+                                    "generateJPEG ==> value = %d, count = %d, percent = %d",
+                                    jcs.next_scanline, jcs.image_height, percent);
+
+                if (callBack != NULL) {
+                    jmethodID changeMethodID = menv->GetMethodID(nativeCallBackClass,
+                                                                 "onCompressChange",
+                                                                 "(Ljava/lang/String;)V");
+                    char description[100];
+                    sprintf(description, "%d", percent);
+                    menv->CallVoidMethod(callBack, changeMethodID, menv->NewStringUTF(description));
+                }
+            }
+        }
+
         //得到一行的首地址
         row_pointer[0] = &data[jcs.next_scanline * row_stride];
 
         //此方法会将jcs.next_scanline加1
         jpeg_write_scanlines(&jcs, row_pointer, 1);//row_pointer就是一行的首地址，1：写入的行数
-
-        // todo 压缩进度
-        // 打印日志
-//        fseek(f, 0L, SEEK_END);
-//        int size = ftell(f);
-//        fclose(f);
-//        __android_log_print(ANDROID_LOG_ERROR, "jni_log", "压缩图片[so,no3] ==> 大小 = %s", size+"");
-//         if (NULL != listener) {
-//            //回调java代码
-//            jclass javaName = menv->FindClass("lib/image/compress/OnCompressChangeListener");
-//            jmethodID methodName = menv->GetMethodID(javaName, "onCompressChange",
-//                                                     "(ILjava/lang/String;)V");
-//            menv->CallVoidMethod(listener, methodName, jcs.data_precision);
-//        }
     }
+
     jpeg_finish_compress(&jcs);//结束
     jpeg_destroy_compress(&jcs);//销毁 回收内存
     fclose(f);//关闭文件
 
-    if (NULL != listener) {
+    if (callBack != NULL) {
 
-        //回调java代码
-        jclass javaName = menv->FindClass("lib/image/compress/OnCompressChangeListener");
-        jmethodID methodName = menv->GetMethodID(javaName, "onCompressFinish",
-                                                 "(Ljava/lang/String;)V");
-        menv->CallVoidMethod(listener, methodName, menv->NewStringUTF(outfilename));
+        jmethodID changeMethodID = menv->GetMethodID(nativeCallBackClass,
+                                                     "onCompressChange",
+                                                     "(Ljava/lang/String;)V");
+        char description[100];
+        sprintf(description, "%d", 100);
+        menv->CallVoidMethod(callBack, changeMethodID, menv->NewStringUTF(description));
+
+        jmethodID pID = menv->GetMethodID(nativeCallBackClass, "onCompressFinish",
+                                          "(Ljava/lang/String;)V");
+        menv->CallVoidMethod(callBack, pID, menv->NewStringUTF(outfilename));
     }
     //关闭资源
     freeResource();
@@ -206,23 +206,24 @@ extern "C"
 //防止c++的命名规范导致jni找不到方法
 JNIEXPORT void JNICALL
 Java_lib_image_compress_CompressNative_nativeLibJpegCompress(JNIEnv *env,
-                                                            jobject instance,
-                                                            jstring outpath_,
-                                                            jobject bitmap,
-                                                            jint CompressionRatio,
-                                                            jboolean isUseHoffman,
-                                                            jobject mListener) {
-    //文件输出地址
+                                                             jobject instance,
+                                                             jstring outpath_,
+                                                             jobject bitmap,
+                                                             jint CompressionRatio,
+                                                             jboolean isUseHoffman,
+                                                             jobject nativeCallBack) {
+    // 保存路径
     const char *outpath = env->GetStringUTFChars(outpath_, 0);
 
-    // 打印日志
-    __android_log_print(ANDROID_LOG_ERROR, "jni_log", "压缩图片[so,no1] ==> 保存路径 = %s", outpath);
+    //打印日志
+    __android_log_print(ANDROID_LOG_ERROR, "jni_time", "nativeLibJpegCompress ==>outpath = %s",
+                        outpath);
 
     //用于保存bitmap的二进制数据
     BYTE *pixelscolor;
 
     //保存全局引用
-    listener = env->NewGlobalRef(mListener);
+    callBack = env->NewGlobalRef(nativeCallBack);
     menv = env;
 
     // 得到bitmap一些信息
@@ -232,25 +233,24 @@ Java_lib_image_compress_CompressNative_nativeLibJpegCompress(JNIEnv *env,
     int w = info.width;
     int h = info.height;
 
+    jclass nativeCallBackClass = env->FindClass("lib/image/compress/OnCompressChangeListener");
+
     //校验图片合法性
     if (w <= 0 || h <= 0) {
 //        LOGE("发生错误:传入的图片宽度或者高度不小于等于0 【width:%d】【height:%d】", w, h);
+        char description[100];
+        sprintf(description, "图高度或者宽为0，【高：%d】 【 宽：%d】", h, w);
+        if (callBack != NULL) {
 
-
-        if (NULL != listener) {
-
-            jclass javaName = env->FindClass("lib/image/compress/OnCompressChangeListener");
-            jmethodID methodName = env->GetMethodID(javaName, "onCompressError",
-                                                    "(ILjava/lang/String;)V");
-
-            char description[100];
-            sprintf(description, "图高度或者宽为0，【高：%d】 【 宽：%d】", h, w);
-
-            env->CallVoidMethod(listener, methodName, BITMAP_HEIGHT_WIDTH_ERROR,
+            jmethodID errorMthodId = env->GetMethodID(nativeCallBackClass, "onCompressError",
+                                                      "(ILjava/lang/String;)V");
+            env->CallVoidMethod(nativeCallBack, errorMthodId, BITMAP_HEIGHT_WIDTH_ERROR,
                                 env->NewStringUTF(description));
         }
 
-        //关闭资源
+        // 释放bitmap
+        // free(bitmap);
+        // 关闭资源
         freeResource();
         return;
     }
@@ -258,24 +258,23 @@ Java_lib_image_compress_CompressNative_nativeLibJpegCompress(JNIEnv *env,
     //校验图片格式
     if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
 //        LOGE("发生错误:传入的图片不合法");
+        jmethodID errorMthodId = env->GetMethodID(nativeCallBackClass, "onCompressError",
+                                                  "(ILjava/lang/String;)V");
 
-        if (NULL != listener) {
-
-            jclass javaName = env->FindClass("lib/image/compress/OnCompressChangeListener");
-            jmethodID methodName = env->GetMethodID(javaName, "onCompressError",
-                                                    "(ILjava/lang/String;)V");
-
-            env->CallVoidMethod(listener, methodName, BITMAP_FOMAT_ERROR,
+        if (callBack != NULL) {
+            env->CallVoidMethod(nativeCallBack, errorMthodId, BITMAP_FOMAT_ERROR,
                                 env->NewStringUTF("图片格式错误"));
         }
 
+        // 释放bitmap
+        // free(bitmap);
         //关闭资源
         freeResource();
         return;
     }
 
 //    LOGE("开始读取数据");
-    //锁定bitmap 获取二进制数据
+    // 锁定bitmap 获取二进制数据
     AndroidBitmap_lockPixels(env, bitmap, (void **) &pixelscolor);
 //
     //2.解析每一个像素点里面的rgb值(去掉alpha值)，保存到一维数组data里面
@@ -310,12 +309,14 @@ Java_lib_image_compress_CompressNative_nativeLibJpegCompress(JNIEnv *env,
     }
     //解锁bitmap
     AndroidBitmap_unlockPixels(env, bitmap);
-//    LOGE("读取数据完毕");
+    //    LOGE("读取数据完毕");
     //拷贝输出文件地址
     char *outPathBackup = (char *) malloc(sizeof(char) * (strlen(outpath) + 1));
     strcpy(outPathBackup, outpath);
+    //    LOGE("开始压缩");
     //压缩
     generateJPEG(tmpdata, w, h, CompressionRatio, outPathBackup, isUseHoffman);
+
     // fix bug 2018-04-22 11:58:04
     if (tmpdata) {
         free(tmpdata);
@@ -323,6 +324,8 @@ Java_lib_image_compress_CompressNative_nativeLibJpegCompress(JNIEnv *env,
     if (outPathBackup) {
         free(outPathBackup);
     }
+    // 释放bitmap
+    // free(bitmap);
     //释放资源
     env->ReleaseStringUTFChars(outpath_, outpath);
 }
