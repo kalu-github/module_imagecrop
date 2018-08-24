@@ -9,11 +9,6 @@ compile 'lib.image.compress:imagecompress:<latest-version>'
 
 2.手机相机拍照高清图片, c压缩图片保持清晰度变换不大, 之后上传至服务器
 ```
-```
-TODO:
-
-压缩过程显示压缩进度
-```
 
 ```
 // 获取bitmap
@@ -33,6 +28,11 @@ CompressManager.syncCompress(true, 5, folderPath, imageName, bitmap, new OnCompr
             @Override
             public void onCompressFinish(String filePath) {
                 Log.e(TAG, "onCompressFinish() ==> filePath = [" + filePath + "]");
+            }
+            
+            @Override
+            public void onCompressChange(final String percent) {
+                Log.e(TAG, "onCompressChange ==> percent = "+percent);
             }
         });
 ```
