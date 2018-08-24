@@ -2,6 +2,8 @@
 ```
 compile 'lib.image.compress:imagecompress:<latest-version>'
 ```
+
+#### 适用环境
 ```
 运行项目, 需要自行配置cmake-android-studio编译环境
 
@@ -10,7 +12,7 @@ compile 'lib.image.compress:imagecompress:<latest-version>'
 2.手机相机拍照高清图片, c压缩图片保持清晰度变换不大, 之后上传至服务器
 ```
 
-### 使用方法
+#### 使用方法
 ```
 Bitmap bitmap = ImageUtil.compressImageJava(getResources(), R.mipmap.test, 2000, 2000);
 
