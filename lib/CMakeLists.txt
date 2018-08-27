@@ -13,7 +13,7 @@ cmake_minimum_required(VERSION 3.4.1)
 include_directories(src/main/cpp/include/)
 
 add_library( # Sets the name of the library.
-             image-compress
+             jpeg_compress
              # Sets the library as a shared library.
              SHARED
              # Provides a relative path to your source file(s).
@@ -38,12 +38,13 @@ find_library( # Sets the name of the path variable.
 
 #lib-image-jpeg.a
 add_library(image-jpeg STATIC IMPORTED)
+
 set_target_properties( image-jpeg
                        PROPERTIES IMPORTED_LOCATION
-                       ${distribution_DIR}/${ANDROID_ABI}/libimage-jpeg.a )
+                       ${distribution_DIR}/${ANDROID_ABI}/libjpeg.so)
 
 target_link_libraries( # Specifies the target library.
-                       image-compress
+                       jpeg_compress
                        jnigraphics
                        # Links the target library to the log library
                        # included in the NDK.

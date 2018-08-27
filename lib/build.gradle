@@ -10,16 +10,18 @@ android {
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
-//        consumerProguardFiles 'proguard.pro'
+
+        ndk {
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'arm64-v8a', 'mips', 'mips64'
+        }
 
         externalNativeBuild {
             cmake {
                 cppFlags ""
-                // cppFlags "-std=c++11 -frtti -fexceptions"
-                // abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'mips', 'mips64'
-                abiFilters 'armeabi', 'x86'
+                abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'arm64-v8a', 'mips', 'mips64'
             }
         }
+
         javaCompileOptions {
             annotationProcessorOptions {
                 includeCompileClasspath true

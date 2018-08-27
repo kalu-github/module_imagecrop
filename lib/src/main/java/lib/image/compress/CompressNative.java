@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 final class CompressNative {
 
     static {
-        System.loadLibrary("image-compress");
+        System.loadLibrary("jpeg_compress");
     }
 
     /**
