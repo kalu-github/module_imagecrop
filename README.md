@@ -36,3 +36,17 @@ CompressManager.syncCompress(true, 5, folderPath, imageName, bitmap, new OnCompr
             }
         });
 ```
+
+#### 编译方法
+```
+1. android studio 配置 cmake ndk16 编译环境[ndk17废弃armeabi架构]
+2. 下载libjpeg[https://github.com/libjpeg-turbo/libjpeg-turbo]
+3. android studio新建空工程, 在app主目录下新建jni目录, 将libjpeg放入jni目录
+4. android studio app目录右键选择Link C++ Project With Gradle, 添加jni目录CMakeLists.txt文件
+5. app moudle下build.gradle文件, 配置cmake编译文件
+        ndk {
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'arm64-v8a', 'mips', 'mips64'
+        }
+5. ide选项, Build => Make Project,
+
+```
