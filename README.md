@@ -52,5 +52,4 @@ CompressManager.syncCompress(true, 5, folderPath, imageName, bitmap, new OnCompr
             abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'arm64-v8a', 'mips', 'mips64'
         }
 5. ide选项, Build => Make Project,
-
 ```
