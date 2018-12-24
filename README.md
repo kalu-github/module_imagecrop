@@ -1,9 +1,9 @@
 ##
-## 预览图片
+#### 预览图片
 ![image](https://github.com/153437803/ImageCompress/blob/master/Screenrecorder-2018-08-24-15-34-58-511.gif )
 
 ##
-## 适用环境
+#### 适用环境
 ```
 运行项目, 需要自行配置cmake-android-studio编译环境
 
@@ -13,7 +13,7 @@
 ```
 
 ##
-## 使用方法
+#### 使用方法
 ```
 Bitmap bitmap = ImageUtil.compressImageJava(getResources(), R.mipmap.test, 2000, 2000);
 
@@ -41,7 +41,7 @@ CompressManager.syncCompress(true, 5, folderPath, imageName, bitmap, new OnCompr
 ```
 
 ##
-## 编译方法
+#### 编译方法
 ```
 1. android studio 配置 cmake ndk16 编译环境[ndk17废弃armeabi架构]
 2. 下载libjpeg[https://github.com/libjpeg-turbo/libjpeg-turbo]
