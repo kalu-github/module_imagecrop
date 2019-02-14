@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 19
+        minSdkVersion 18
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
@@ -28,6 +28,6 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:25.3.1'
-    implementation project(':lib')
+    implementation 'com.android.support:appcompat-v7:28.+'
+    implementation project(':lib_jpegturbo')
 }

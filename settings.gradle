@@ -1,1 +1,2 @@
-include ':lib', ':app'
+include ':app'
+include ':lib_jpegturbo'
