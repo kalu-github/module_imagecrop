@@ -11,7 +11,7 @@ android {
         versionName "2.0.2"
 
         ndk {
-            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'arm64-v8a', 'mips', 'mips64'
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
         }
     }
     buildTypes {
@@ -29,5 +29,5 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:28.+'
-    implementation project(':lib_jpegturbo')
+    api project(':lib_jpegturbo')
 }

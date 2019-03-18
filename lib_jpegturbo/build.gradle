@@ -12,13 +12,13 @@ android {
         versionName "2.0.2"
 
         ndk {
-            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'arm64-v8a', 'mips', 'mips64'
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
         }
 
         externalNativeBuild {
             cmake {
                 cppFlags ""
-                abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'arm64-v8a', 'mips', 'mips64'
+                abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
             }
         }
 
@@ -35,14 +35,19 @@ android {
 
     externalNativeBuild {
         cmake {
-            path "CMakeLists.txt"
             path file('/src/main/cpp/jpegturbo/CMakeLists.txt')
+            path file('CMakeLists.txt')
         }
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    packagingOptions {
+        exclude 'build/'
+        exclude '.externalNativeBuild/'
     }
 }
 
