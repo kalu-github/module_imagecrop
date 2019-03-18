@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 18
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode 202
+        versionName "2.0.2"
 
         ndk {
             abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'arm64-v8a', 'mips', 'mips64'
@@ -32,15 +32,17 @@ android {
         jniLibs.srcDir 'libs'
         jni.srcDirs = []
     }
+
     externalNativeBuild {
         cmake {
-            path "src\\main\\cpp\\jpegturbo201\\CMakeLists.txt"
             path "CMakeLists.txt"
+            path file('/src/main/cpp/jpegturbo/CMakeLists.txt')
         }
     }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -52,7 +54,7 @@ publish {
     userOrg = 'zhanghang'//bintray.com用户名
     groupId = 'lib.image.compress'//jcenter上的路径
     artifactId = 'imagecompress'//项目名称
-    publishVersion = '1.0'//版本号
+    publishVersion = '2.1'//版本号
     desc = 'This is a image compress'//描述，不重要
     website = 'https://github.com/153437803/ImageCompress'//网站，不重要；尽量模拟github上的地址，例如我这样的；当然你有地址最好了
 }

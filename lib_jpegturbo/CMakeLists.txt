@@ -34,7 +34,7 @@ find_library( # Sets the name of the path variable.
         # you want CMake to locate.
         android)
 
-#lib-image-jpeg.a
+#libjpeg.so
 add_library(image-jpeg STATIC IMPORTED)
 
 set_target_properties(image-jpeg
