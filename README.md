@@ -3,13 +3,6 @@
 ![image](https://github.com/153437803/ImageCompress/blob/master/Screenrecorder-2018-08-24-15-34-58-511.gif )
 
 ##
-#### jpegturbo生成动态库文件路径修改
-```
-1. jpegturbo201/CMakeLists.txt => 8-11
-2. jpegturbo201/sharedlib/CMakeLists.txt => 10-12
-```
-
-##
 #### 适用环境
 ```
 运行项目, 需要自行配置cmake-android-studio编译环境
