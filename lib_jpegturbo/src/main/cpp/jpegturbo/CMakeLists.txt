@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.12)
 # 设置生成的so动态库最后输出的路径
 #set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../jniLibs/${ANDROID_ABI})
 # modify by kalu 2019年2月14日13点46分
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../../../../libs/${ANDROID_ABI})
+# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../../../../libs/${ANDROID_ABI})
 
 project(libjpeg-turbo C)
 set(VERSION 2.0.2)

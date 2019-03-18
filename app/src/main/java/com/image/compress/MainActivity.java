@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClick(View view) {
 
-        final String folderPath = Environment.getExternalStorageDirectory().getPath() + "//";
+        final String folderPath = Environment.getExternalStorageDirectory().getPath();
         CompressManager.asynCompress(getResources(), R.mipmap.compress, 2000, 2000, true, 20, folderPath, "compress.jpg", new OnCompressChangeListener() {
 
             @Override
