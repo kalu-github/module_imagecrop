@@ -281,7 +281,7 @@ Java_lib_image_compress_CompressNative_nativeLibJpegCompress(JNIEnv *env,
 //
     //2.解析每一个像素点里面的rgb值(去掉alpha值)，保存到一维数组data里面
     BYTE *data;
-    BYTE a, r, g, b;
+    BYTE r, g, b; // BYTE a, r, g, b;
     data = (BYTE *) malloc(w * h * 3);//每一个像素都有四个信息ARGB 并且ARGB8888每一个像素点为64位
     BYTE *tmpdata;
     tmpdata = data;//临时保存data的首地址
