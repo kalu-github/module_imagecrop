@@ -17,14 +17,6 @@ extern "C" {
 jobject callBack;
 JNIEnv *menv;
 
-//关闭资源调用此方法
-void freeResource() {
-
-    menv->DeleteGlobalRef(callBack);
-    callBack = NULL;
-    menv = NULL;
-}
-
 //定义一个别名 方便存储二进制数据
 typedef typedef unsigned char BYTE;
 
@@ -62,8 +54,8 @@ METHODDEF(void) my_error_exit(j_common_ptr cinfo) {
 
 
 // 生成JPEG
-int generateJPEG(BYTE *data, int w, int h, int quality,
-                 const char *outfilename, jboolean optimize) {
+int generate(BYTE *data, int w, int h, int quality,
+             const char *outfilename, jboolean optimize) {
 
     //打印日志
     __android_log_print(ANDROID_LOG_ERROR, "jni_time", "generateJPEG ==> ");
@@ -82,7 +74,9 @@ int generateJPEG(BYTE *data, int w, int h, int quality,
     if (setjmp(jem.setjmp_buffer)) {
 
         //关闭资源
-        freeResource();
+        menv->DeleteGlobalRef(callBack);
+        callBack = NULL;
+        menv = NULL;
         return 0;
     }
 
@@ -106,7 +100,9 @@ int generateJPEG(BYTE *data, int w, int h, int quality,
         }
 
         //关闭资源
-        freeResource();
+        menv->DeleteGlobalRef(callBack);
+        callBack = NULL;
+        menv = NULL;
         return 0;
     }
 
@@ -197,7 +193,9 @@ int generateJPEG(BYTE *data, int w, int h, int quality,
         menv->CallVoidMethod(callBack, pID, menv->NewStringUTF(outfilename));
     }
     //关闭资源
-    freeResource();
+    menv->DeleteGlobalRef(callBack);
+    callBack = NULL;
+    menv = NULL;
 //    LOGE("完成");
     return 1;
 }
@@ -206,7 +204,7 @@ extern "C"
 //防止c++的命名规范导致jni找不到方法
 JNIEXPORT void JNICALL
 Java_lib_image_compress_CompressNative_nativeLibJpegCompress(JNIEnv *env,
-                                                             jobject instance,
+                                                             jclass type,
                                                              jstring outpath_,
                                                              jobject bitmap,
                                                              jint CompressionRatio,
@@ -251,7 +249,9 @@ Java_lib_image_compress_CompressNative_nativeLibJpegCompress(JNIEnv *env,
         // 释放bitmap
         // free(bitmap);
         // 关闭资源
-        freeResource();
+        menv->DeleteGlobalRef(callBack);
+        callBack = NULL;
+        menv = NULL;
         return;
     }
 
@@ -269,7 +269,9 @@ Java_lib_image_compress_CompressNative_nativeLibJpegCompress(JNIEnv *env,
         // 释放bitmap
         // free(bitmap);
         //关闭资源
-        freeResource();
+        menv->DeleteGlobalRef(callBack);
+        callBack = NULL;
+        menv = NULL;
         return;
     }
 
@@ -315,7 +317,7 @@ Java_lib_image_compress_CompressNative_nativeLibJpegCompress(JNIEnv *env,
     strcpy(outPathBackup, outpath);
     //    LOGE("开始压缩");
     //压缩
-    generateJPEG(tmpdata, w, h, CompressionRatio, outPathBackup, isUseHoffman);
+    generate(tmpdata, w, h, CompressionRatio, outPathBackup, isUseHoffman);
 
     // fix bug 2018-04-22 11:58:04
     if (tmpdata) {
