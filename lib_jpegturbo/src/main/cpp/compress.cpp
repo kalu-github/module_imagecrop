@@ -312,20 +312,20 @@ Java_lib_image_compress_CompressNative_nativeLibJpegCompress(JNIEnv *env,
     //解锁bitmap
     AndroidBitmap_unlockPixels(env, bitmap);
     //    LOGE("读取数据完毕");
-    //拷贝输出文件地址
-    char *outPathBackup = (char *) malloc(sizeof(char) * (strlen(outpath) + 1));
-    strcpy(outPathBackup, outpath);
+//    //拷贝输出文件地址
+//    char *outPathBackup = (char *) malloc(sizeof(char) * (strlen(outpath) + 1));
+//    strcpy(outPathBackup, outpath);
     //    LOGE("开始压缩");
     //压缩
-    generate(tmpdata, w, h, CompressionRatio, outPathBackup, isUseHoffman);
+    generate(tmpdata, w, h, CompressionRatio, outpath, isUseHoffman);
 
     // fix bug 2018-04-22 11:58:04
     if (tmpdata) {
         free(tmpdata);
     }
-    if (outPathBackup) {
-        free(outPathBackup);
-    }
+//    if (outPathBackup) {
+//        free(outPathBackup);
+//    }
     // 释放bitmap
     // free(bitmap);
     //释放资源
