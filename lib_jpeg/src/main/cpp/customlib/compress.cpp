@@ -7,9 +7,9 @@
 #include <stdint.h>
 #include <time.h>
 #include <malloc.h>
-#include "include\mconst.h"
 //告诉编译器以下文件是用c文件
 extern "C" {
+#include "include\mconst.h"
 #include "include\jpeglib.h"
 #include "include\jmorecfg.h"    /* for version message */
 }
