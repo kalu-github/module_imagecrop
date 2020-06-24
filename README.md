@@ -3,6 +3,14 @@
 ![image](https://github.com/153437803/ImageCompress/blob/master/Screenrecorder-2018-08-24-15-34-58-511.gif )
 
 ##
+#### 编译
+![image](https://github.com/153437803/ImageCompress/blob/master/1.png )
+![image](https://github.com/153437803/ImageCompress/blob/master/2.png )
+![image](https://github.com/153437803/ImageCompress/blob/master/3.png )
+![image](https://github.com/153437803/ImageCompress/blob/master/4.png )
+![image](https://github.com/153437803/ImageCompress/blob/master/5.png )
+
+##
 #### 适用环境
 ```
 cmake 3.10.2.4988404
