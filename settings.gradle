@@ -1,2 +1,3 @@
 include ':app'
-include ':lib_jpegturbo'
+include ':lib_jpeg'
+//include ':lib_jpegturbo'

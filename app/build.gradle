@@ -1,14 +1,16 @@
-apply plugin: 'com.android.application'
+apply plugin: rootProject.ext.plugin.com_android_application
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+compileSdkVersion rootProject.ext.android.compileSdkVersion
+buildToolsVersion rootProject.ext.android.buildToolsVersion
 
-    defaultConfig {
-        minSdkVersion 18
-        targetSdkVersion 28
-        versionCode 202
-        versionName "2.0.2"
+defaultConfig {
+
+    minSdkVersion rootProject.ext.android.minSdkVersion
+    targetSdkVersion rootProject.ext.android.targetSdkVersion
+    versionCode rootProject.ext.android.versionCode
+    versionName rootProject.ext.android.versionName
+    vectorDrawables.useSupportLibrary = true
 
         ndk {
             abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
@@ -29,5 +31,5 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:28.+'
-    implementation project(':lib_jpegturbo')
+    implementation project(':lib_jpeg')
 }

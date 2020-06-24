@@ -8,3 +8,6 @@
 /build
 /captures
 .externalNativeBuild
+/lib_jpeg/build
+/lib_jpeg/.cxx
+/.idea
