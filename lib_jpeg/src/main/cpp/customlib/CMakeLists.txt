@@ -37,6 +37,15 @@ set_target_properties(
         PROPERTIES
         IMPORTED_LOCATION
         ${CMAKE_SOURCE_DIR}/../../../../output/jpeg/jni/${ANDROID_ABI}/libjpeg.so)
+#
+##libjpeg.a
+#add_library(jpeg-lib STATIC IMPORTED)
+#
+#set_target_properties(
+#        jpeg-lib
+#        PROPERTIES
+#        IMPORTED_LOCATION
+#        ${CMAKE_SOURCE_DIR}/../../../../output/jpeg-turbo/libjpeg.a)
 
 target_link_libraries(
 
