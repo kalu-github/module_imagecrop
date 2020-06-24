@@ -33,7 +33,6 @@ android {
     }
 
     externalNativeBuild {
-
         cmake {
             path "src/main/cpp/customlib/CMakeLists.txt"
         }

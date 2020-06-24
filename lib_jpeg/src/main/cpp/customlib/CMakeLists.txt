@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.4.1)
 # set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../jniLibs/${ANDROID_ABI})
 
 add_library( # Sets the name of the library.
-        kalu-image
+        jni-jpeg
         # Sets the library as a shared library.
         SHARED
         # Provides a relative path to your source file(s).
@@ -29,28 +29,30 @@ find_library( # Sets the name of the path variable.
         # you want CMake to locate.
         android)
 
-#libjpeg.so
-add_library(jpeg-lib SHARED IMPORTED)
+##libjpeg.so
+#add_library(jpeg-lib SHARED IMPORTED)
+#
+#set_target_properties(
+#        jpeg-android
+#        PROPERTIES
+#        IMPORTED_LOCATION
+#        ${CMAKE_SOURCE_DIR}/../../../../output/jpeg/jni/${ANDROID_ABI}/libjpeg.so)
+#
+
+
+#libjpeg.a
+add_library(jpeg-lib STATIC IMPORTED)
 
 set_target_properties(
         jpeg-lib
         PROPERTIES
         IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/../../../../output/jpeg/jni/${ANDROID_ABI}/libjpeg.so)
-#
-##libjpeg.a
-#add_library(jpeg-lib STATIC IMPORTED)
-#
-#set_target_properties(
-#        jpeg-lib
-#        PROPERTIES
-#        IMPORTED_LOCATION
-#        ${CMAKE_SOURCE_DIR}/../../../../output/jpeg-turbo/libjpeg.a)
+        ${CMAKE_SOURCE_DIR}/../../../../output/jpeg/${ANDROID_ABI}/libjpeg.a)
 
 target_link_libraries(
 
         # so
-        kalu-image
+        jni-jpeg
 
         # Specifies the target library.
         jnigraphics

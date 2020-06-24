@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8.12)
 
 # create by kalu on custom
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../../output/jpeg-turbo/jni/${ANDROID_ABI})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../../output/jpeg-turbo)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../../output/jpeg-turbo)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../../output/jpeg-turbo/${ANDROID_ABI})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../../output/jpeg-turbo/${ANDROID_ABI})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../../output/jpeg-turbo/${ANDROID_ABI})
 
 if (CMAKE_EXECUTABLE_SUFFIX)
     set(CMAKE_EXECUTABLE_SUFFIX_TMP ${CMAKE_EXECUTABLE_SUFFIX})
@@ -594,7 +594,9 @@ if (WITH_TURBOJPEG)
             include_directories(${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
             set(TJMAPFILE ${CMAKE_CURRENT_SOURCE_DIR}/turbojpeg-mapfile.jni)
         endif ()
-        add_library(turbojpeg SHARED ${TURBOJPEG_SOURCES})
+        # add_library(turbojpeg SHARED ${TURBOJPEG_SOURCES})
+        # create by kalu
+        add_library(turbojpeg STATIC ${TURBOJPEG_SOURCES})
         set_property(TARGET turbojpeg PROPERTY COMPILE_FLAGS
                 "-DBMP_SUPPORTED -DPPM_SUPPORTED")
         if (WIN32)

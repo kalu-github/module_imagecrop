@@ -1,6 +1,5 @@
 package lib.kalu.image;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -54,15 +53,15 @@ public final class CompressManager {
      *
      * @param hoffman        是否使用哈夫曼编码
      * @param ratio          质量1-100    1是最低质量
-     * @param bitmap         需要压缩的bitmap图片
+     * @param fromImageBitmap         需要压缩的bitmap图片
      * @param nativeCallBack 回调 如果是子线程调用那么回调在子线程
      */
-    public static void syncCompress(final boolean hoffman, final int ratio,
-                                    final String imageFile,
-                                    final Bitmap bitmap, final OnCompressChangeListener nativeCallBack) {
+    public static void syncCompress(boolean hoffman, int ratio,
+                                    Bitmap fromImageBitmap, String toImagePath,
+                                    OnCompressChangeListener nativeCallBack) {
 
 
-        final File image = new File(imageFile);
+        final File image = new File(toImagePath);
         try {
 
             if (image.isFile()) {
@@ -71,15 +70,17 @@ public final class CompressManager {
                 }
                 image.createNewFile();
             }
-            nativecompress(hoffman, bitmap, nativeCallBack, imageFile, ratio);
+            nativecompress(hoffman, fromImageBitmap, nativeCallBack, toImagePath, ratio);
         } catch (IOException e) {
             Log.e("kalu", e.getMessage(), e);
         }
     }
 
-    public static void asynCompress(final int decodeWidth, final int decodeHeight,
-            final boolean hoffman, final int ratio,
-            final String imageFile, final OnCompressChangeListener nativeCallBack) {
+    public static void asynCompress(
+            int decodeWidth, int decodeHeight,
+            boolean hoffman, int ratio,
+            String fromImagePath, String toImagePath,
+            OnCompressChangeListener nativeCallBack) {
 
         new Thread() {
             @Override
@@ -90,7 +91,7 @@ public final class CompressManager {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 //该属性设置为true只会加载图片的边框进来，并不会加载图片具体的像素点
                 options.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(imageFile, options);
+                BitmapFactory.decodeFile(fromImagePath, options);
 
                 //获得原图的宽和高
                 int outWidth = options.outWidth;
@@ -112,30 +113,16 @@ public final class CompressManager {
                 options.inSampleSize = sampleSize;
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
-                Bitmap bitmap = BitmapFactory.decodeFile(imageFile, options);
+                Bitmap bitmap = BitmapFactory.decodeFile(fromImagePath, options);
                 Log.e("jiji", "asynCompress ==> bitmap = " + bitmap);
 
-                syncCompress(hoffman, ratio, imageFile, bitmap, nativeCallBack);
+                syncCompress(hoffman, ratio, bitmap, toImagePath, nativeCallBack);
 
                 if (null != bitmap) {
                     bitmap.recycle();
                     bitmap = null;
                     Log.e("jiji", "asynCompress ==> bitmap = " + bitmap);
                 }
-            }
-        }.start();
-    }
-
-    public static void asynCompress(
-            final boolean hoffman, final int ratio,
-            final String imageFile,
-            final Bitmap bitmap, final OnCompressChangeListener nativeCallBack) {
-
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                syncCompress(hoffman, ratio, imageFile, bitmap, nativeCallBack);
             }
         }.start();
     }

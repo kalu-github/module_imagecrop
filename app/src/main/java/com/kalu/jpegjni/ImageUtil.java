@@ -1,4 +1,4 @@
-package com.image.compress;
+package com.kalu.jpegjni;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;

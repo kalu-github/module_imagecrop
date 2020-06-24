@@ -6,9 +6,9 @@
 # static C library.
 
 # create by kalu on custom
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../../output/jpeg/jni/${ANDROID_ABI})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../../output/jpeg)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../../output/jpeg)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../../output/jpeg/${ANDROID_ABI})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../../output/jpeg/${ANDROID_ABI})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../../output/jpeg/${ANDROID_ABI})
 
 # create by kalu on backup
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/..)
@@ -38,10 +38,16 @@ if (WIN32)
     if (WITH_MEM_SRCDST)
         set(DEFFILE ../win/jpeg${SO_MAJOR_VERSION}-memsrcdst.def)
     else ()
-        set(DEFFILE ../win/jpeg${SO_MAJOR_VERSION}.def)
+        set(DEFFILE-' ../win/jpeg${SO_MAJOR_VERSION}.def)
     endif ()
 endif ()
-add_library(jpeg SHARED ${JPEG_SRCS} ${DEFFILE} $<TARGET_OBJECTS:simd>
+
+
+#add_library(jpeg SHARED ${JPEG_SRCS} ${DEFFILE} $<TARGET_OBJECTS:simd>
+#        ${SIMD_OBJS})
+
+# create by kalu
+add_library(jpeg STATIC ${JPEG_SRCS} ${DEFFILE} $<TARGET_OBJECTS:simd>
         ${SIMD_OBJS})
 
 set_target_properties(jpeg PROPERTIES SOVERSION ${SO_MAJOR_VERSION}

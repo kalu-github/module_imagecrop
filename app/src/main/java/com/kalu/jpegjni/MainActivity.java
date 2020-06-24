@@ -1,4 +1,4 @@
-package com.image.compress;
+package com.kalu.jpegjni;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -66,10 +66,12 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-
         }
 
-        CompressManager.asynCompress(4000, 4000, true, 20, path + "/" + file, new OnCompressChangeListener() {
+        String fromImagePath = path + "/" + file;
+        String toImagePath = path + "/jni.jpg";
+
+        CompressManager.asynCompress(4000, 4000, true, 20, fromImagePath, toImagePath, new OnCompressChangeListener() {
 
             @Override
             public void onCompressChange(final String percent) {
