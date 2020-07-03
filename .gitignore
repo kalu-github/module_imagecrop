@@ -11,3 +11,5 @@
 /lib_jpeg/build
 /lib_jpeg/.cxx
 /.idea
+/lib_jpeg/output
+/lib_jpeg/libs

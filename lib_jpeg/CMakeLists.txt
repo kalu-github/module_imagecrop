@@ -1,19 +1,22 @@
-#设置cmake最小支持版本
 cmake_minimum_required(VERSION 3.4.1)
 
 # C的编译选项是 CMAKE_C_FLAGS
 # 指定编译参数，可选
 # SET(CMAKE_CXX_FLAGS "-Wno-error=format-security -Wno-error=pointer-sign")
 
-# 设置生成的so动态库最后输出的路径
-# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../jniLibs/${ANDROID_ABI})
+add_subdirectory(src/main/cpp)
+
+# create by kalu on custom
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output/jpeg-android/${ANDROID_ABI})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output/jpeg-android/${ANDROID_ABI})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output/jpeg-android/${ANDROID_ABI})
 
 add_library( # Sets the name of the library.
-        jni-jpeg
+        jpeg-android
         # Sets the library as a shared library.
         SHARED
         # Provides a relative path to your source file(s).
-        compress.cpp)
+        src/main/cpp/customlib/compress.cpp)
 
 find_library( # Sets the name of the path variable.
         log-lib
@@ -29,30 +32,19 @@ find_library( # Sets the name of the path variable.
         # you want CMake to locate.
         android)
 
-##libjpeg.so
-#add_library(jpeg-lib SHARED IMPORTED)
-#
-#set_target_properties(
-#        jpeg-android
-#        PROPERTIES
-#        IMPORTED_LOCATION
-#        ${CMAKE_SOURCE_DIR}/../../../../output/jpeg/jni/${ANDROID_ABI}/libjpeg.so)
-#
-
 
 #libjpeg.a
-add_library(jpeg-lib STATIC IMPORTED)
+add_library(jpeg-core STATIC IMPORTED)
 
 set_target_properties(
-        jpeg-lib
+        jpeg-core
         PROPERTIES
         IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/../../../../output/jpeg/${ANDROID_ABI}/libjpeg.a)
+        ${CMAKE_SOURCE_DIR}/output/jpeg/${ANDROID_ABI}/libjpeg.a)
 
 target_link_libraries(
-
         # so
-        jni-jpeg
+        jpeg-android
 
         # Specifies the target library.
         jnigraphics
@@ -63,5 +55,5 @@ target_link_libraries(
         ${android-lib}
 
         # Specifies the target library.
-        jpeg-lib
+        jpeg-core
 )

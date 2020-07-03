@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 final class Compress {
 
     static {
-        System.loadLibrary("jni-jpeg");
+        System.loadLibrary("jpeg-android");
     }
 
     /**
