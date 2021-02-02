@@ -1,0 +1,7 @@
+include ':app'
+include ':lib_crop_native'
+include ':lib_crop_java'
+
+//include ':build_libpng'
+//include ':build_libjpeg'
+//include ':build_libjpegturbo'

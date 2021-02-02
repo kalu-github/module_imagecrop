@@ -1,0 +1,75 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 28
+        versionCode 26
+        versionName "2.2.5-native"
+        vectorDrawables.useSupportLibrary = true
+
+        ndk {
+            abiFilters "armeabi"
+        }
+
+        externalNativeBuild {
+            cmake {
+
+                cppFlags "-std=c++14", "-fexceptions", "-O2"
+//                cppFlags "-std=c++14", "-fexceptions", "-fno-exceptions", "-O2"
+                abiFilters "armeabi"
+                arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_TOOLCHAIN=clang"
+
+//                cppFlags "-DANDROID", "-frtti", "-fexceptions"
+//                abiFilters "armeabi"
+                // armeabi armeabi-v7a x86 x86_64 arm64-v8a
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            zipAlignEnabled false
+            shrinkResources false
+            multiDexEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../proguard/proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled true
+            zipAlignEnabled false
+            shrinkResources false
+            multiDexEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../proguard/proguard-rules.pro'
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+
+    //给 Module 内的资源名增加前缀, 避免资源名冲突
+    resourcePrefix 'ucrop_'
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation "androidx.appcompat:appcompat:${androidx_appcompat_version}"
+    implementation "androidx.exifinterface:exifinterface:${androidx_exifinterface_version}"
+    implementation "androidx.transition:transition:${androidx_transition_version}"
+    implementation "com.squareup.okhttp3:okhttp:3.12.1"
+}

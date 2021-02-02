@@ -1,15 +1,8 @@
-*.iml
-.git
-.gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-/lib_jpeg/build
-/lib_jpeg/.cxx
+# Project exclude paths
+/.gradle/
+/app/build/
+/app/build/intermediates/javac/activityDebug/classes/
+/lib_crop_native/.cxx/
+/lib_crop_native/build/
+/lib_crop_native/build/intermediates/javac/debug/classes/
 /.idea
-/lib_jpeg/output
-/lib_jpeg/libs
