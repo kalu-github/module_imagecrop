@@ -11,6 +11,14 @@ android {
         versionName "2.2.5-native"
         vectorDrawables.useSupportLibrary = true
 
+        libraryVariants.all { variant ->
+            variant.outputs.all {
+                def type = new String(buildType.name).toLowerCase()
+                def time = new Date().format("yyyyMMdd", TimeZone.getTimeZone("GMT+08"))
+                outputFileName = "lib_crop_" + type + "_" + time + ".aar"
+            }
+        }
+
         ndk {
             abiFilters "armeabi"
         }
