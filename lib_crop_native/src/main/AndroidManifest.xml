@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.yalantis.ucrop">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -9,8 +10,8 @@
         android:allowBackup="false"
         android:requestLegacyExternalStorage="true">
         <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:name="com.yalantis.ucrop.fileprovider.CropFileProvider"
+            android:authorities="${applicationId}.crop.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

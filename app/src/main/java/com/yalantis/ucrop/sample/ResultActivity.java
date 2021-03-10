@@ -159,9 +159,15 @@ public class ResultActivity extends BaseActivity {
     private void showNotification(@NonNull File file) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        StringBuilder builder = new StringBuilder();
+        String packageName = getPackageName();
+        builder.append(packageName);
+        builder.append(".crop.fileprovider");
+
         Uri fileUri = FileProvider.getUriForFile(
                 this,
-                getString(R.string.file_provider_authorities),
+                builder.toString(),
                 file);
 
         intent.setDataAndType(fileUri, "image/*");
