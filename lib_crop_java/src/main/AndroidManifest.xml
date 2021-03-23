@@ -9,8 +9,8 @@
         android:allowBackup="false"
         android:requestLegacyExternalStorage="true">
         <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:name="com.yalantis.ucrop.fileprovider.CropFileProvider"
+            android:authorities="${applicationId}.crop.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
